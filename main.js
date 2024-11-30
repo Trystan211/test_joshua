@@ -94,13 +94,15 @@ const loader = new GLTFLoader();
 loader.load(
   'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 5; i++) { // Lessen to 5 benches
       const x = Math.random() * 40 - 20;
       const z = Math.random() * 40 - 20;
+      const rotationY = Math.random() * Math.PI * 2; // Random rotation in radians
 
       const bench = gltf.scene.clone();
       bench.position.set(x, 0, z);
-      bench.scale.set(0.5, 0.5, 0.5); // Adjust scale to fit the scene
+      bench.rotation.y = rotationY; // Apply random rotation
+      bench.scale.set(2, 2, 2); // Adjust scale to fit the scene
       bench.castShadow = true;
       bench.receiveShadow = true; // Ensure benches receive shadows
       scene.add(bench);
@@ -116,7 +118,7 @@ loader.load(
   (gltf) => {
     const fountain = gltf.scene;
     fountain.position.set(0, 0, 0);
-    fountain.scale.set(1.5, 1.5, 1.5); // Adjust scale to fit the scene
+    fountain.scale.set(2.5, 2.5, 2.5); // Adjust scale to fit the scene
     fountain.castShadow = true;
     fountain.receiveShadow = true; // Ensure fountain receives shadows
     scene.add(fountain);
