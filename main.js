@@ -117,8 +117,8 @@ loader.load(
   'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb', // Replace with your GLTF model URL for the fountain
   (gltf) => {
     const fountain = gltf.scene;
-    fountain.position.set(0, 0, 0);
-    fountain.scale.set(3.5, 3.5, 3.5); // Adjust scale to fit the scene
+    fountain.position.set(-3, 0, -1);
+    fountain.scale.set(3, 3, 3); // Adjust scale to fit the scene
     fountain.castShadow = true;
     fountain.receiveShadow = true; // Ensure fountain receives shadows
     scene.add(fountain);
