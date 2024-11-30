@@ -68,7 +68,7 @@ loader.load(
     const shrine = gltf.scene;
 
     shrine.position.set(restrictedArea.x, 0, restrictedArea.z);
-    shrine.scale.set(100, 100, 100); // Increased scale to fit the scene
+    shrine.scale.set(150, 150, 150); // Increased scale to fit the scene
     scene.add(shrine);
 
     // Calculate bounding box
@@ -133,7 +133,7 @@ loader.load(
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 1, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 1.5, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
       fox.scale.set(2, 2, 2);
       scene.add(fox);
