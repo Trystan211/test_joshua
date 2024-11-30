@@ -76,7 +76,7 @@ loader.load(
 
     // Position the shrine
     fountain.position.set(restrictedArea.x, 0, restrictedArea.z);
-    fountain.scale.set(3, 3, 3); // Adjust scale to fit the scene
+    fountain.scale.set(10, 10, 10); // Adjust scale to fit the scene
     fountain.castShadow = true;
     fountain.receiveShadow = true;
     scene.add(fountain);
@@ -149,7 +149,7 @@ loader.load(
       const bench = gltf.scene.clone();
       bench.position.set(position.x, 0, position.z);
       bench.rotation.y = rotationY; // Apply random rotation
-      bench.scale.set(4, 4, 4); // Adjust scale to fit the scene
+      bench.scale.set(2, 2, 2); // Adjust scale to fit the scene
       bench.castShadow = true;
       bench.receiveShadow = true; // Ensure benches receive shadows
       scene.add(bench);
