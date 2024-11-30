@@ -92,7 +92,7 @@ for (let i = 0; i < 20; i++) {
 const loader = new GLTFLoader();
 
 loader.load(
-  'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
+  'https://trystan211.github.io/test_joshua/fox.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
     for (let i = 0; i < 5; i++) { // Lessen to 5 benches
       const x = Math.random() * 40 - 20;
@@ -149,7 +149,7 @@ for (let i = 0; i < 15; i++) {
   scene.add(rock);
 }
 
-// Blue Rain Particles
+// Red Rain Particles
 const particleCount = 1000;
 const particlesGeometry = new THREE.BufferGeometry();
 const positions = [];
@@ -168,8 +168,8 @@ particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(posi
 particlesGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
 
 const particlesMaterial = new THREE.PointsMaterial({
-  color: 0x0077ff,
-  size: 0.3,
+  color: 0xb94e48,
+  size: 0.5,
   transparent: true,
   opacity: 0.8
 });
