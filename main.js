@@ -1,136 +1,151 @@
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.module.js';
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/jsm/loaders/GLTFLoader.js';
 
-// Scene, Camera, Renderer
+// Scene Setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000020); // Alien night atmosphere
+scene.background = new THREE.Color(0xffd7b5); // Warm sunset color
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
-camera.position.set(15, 15, 20); // Positioned for a wide view of the alien world
+camera.position.set(20, 10, 30);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true; // Enable shadows for depth
+renderer.shadowMap.enabled = true;
 document.body.appendChild(renderer.domElement);
 
-// Ground (Alien Terrain)
-const terrain = new THREE.Mesh(
-  new THREE.PlaneGeometry(50, 50, 32, 32),
-  new THREE.MeshStandardMaterial({ color: 0x333333, wireframe: false })
-);
-terrain.rotation.x = -Math.PI / 2;
-terrain.receiveShadow = true;
-scene.add(terrain);
-
-// Fog for atmosphere
-scene.fog = new THREE.Fog(0x111133, 15, 50);
-
-// Ambient and Directional Lights
-const ambientLight = new THREE.AmbientLight(0x6666ff, 0.2); // Slightly bluish ambient light
-scene.add(ambientLight);
-
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(10, 15, 10);
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
-// Rotating Crystals
-const crystalMaterial = new THREE.MeshStandardMaterial({ color: 0x66ffcc, emissive: 0x33ffee });
-
-for (let i = 0; i < 10; i++) {
-  const crystal = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.5, 1, 5, 6), // Pointy cylinder
-    crystalMaterial
-  );
-  crystal.position.set(
-    Math.random() * 40 - 20,
-    2.5,
-    Math.random() * 40 - 20
-  );
-  crystal.rotation.y = Math.random() * Math.PI; // Random rotation
-  crystal.castShadow = true;
-  scene.add(crystal);
-
-  // Animate rotation
-  crystal.userData = {
-    rotateSpeed: Math.random() * 0.02 + 0.01,
-  };
-}
-
-// Glowing Orbs (Firefly-like objects)
-const orbs = [];
-for (let i = 0; i < 15; i++) {
-  const orb = new THREE.PointLight(0xffff44, 2, 5);
-  orb.position.set(
-    Math.random() * 40 - 20,
-    Math.random() * 5 + 1,
-    Math.random() * 40 - 20
-  );
-  scene.add(orb);
-  orbs.push({
-    light: orb,
-    velocity: new THREE.Vector3(
-      (Math.random() - 0.5) * 0.1,
-      (Math.random() - 0.5) * 0.1,
-      (Math.random() - 0.5) * 0.1
-    ),
-  });
-}
-
-// Alien Artifact (Interactive Object)
-const artifactMaterial = new THREE.MeshStandardMaterial({ color: 0xff33cc, emissive: 0xaa0033 });
-const artifact = new THREE.Mesh(
-  new THREE.DodecahedronGeometry(2),
-  artifactMaterial
-);
-artifact.position.set(0, 2, 0);
-artifact.castShadow = true;
-scene.add(artifact);
-
-// Raycaster and Mouse
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
-
-const onClick = (event) => {
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-  raycaster.setFromCamera(mouse, camera);
-
-  const intersects = raycaster.intersectObject(artifact, true);
-
-  if (intersects.length > 0) {
-    artifact.material.emissive.set(0x33ff33); // Change color temporarily
-    setTimeout(() => artifact.material.emissive.set(0xaa0033), 300);
-  }
-};
-
-window.addEventListener("click", onClick);
-
-// Camera Controls
+// OrbitControls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.25;
 
-// Animation
+// Ground
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(100, 100),
+  new THREE.MeshStandardMaterial({ color: 0x8db596 }) // Grass-like material
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Ambient Light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+scene.add(ambientLight);
+
+// Sunlight
+const sunlight = new THREE.DirectionalLight(0xffe3b8, 1.2);
+sunlight.position.set(10, 20, -5);
+sunlight.castShadow = true;
+sunlight.shadow.mapSize.width = 1024;
+sunlight.shadow.mapSize.height = 1024;
+scene.add(sunlight);
+
+// Trees
+const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+const leafMaterial = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
+
+for (let i = 0; i < 15; i++) {
+  const x = Math.random() * 50 - 25;
+  const z = Math.random() * 50 - 25;
+
+  const trunk = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.3, 0.3, 4),
+    trunkMaterial
+  );
+  trunk.position.set(x, 2, z);
+  trunk.castShadow = true;
+
+  const foliage = new THREE.Mesh(
+    new THREE.SphereGeometry(2, 16, 16),
+    leafMaterial
+  );
+  foliage.position.set(x, 6, z);
+  foliage.castShadow = true;
+
+  scene.add(trunk);
+  scene.add(foliage);
+}
+
+// GLTFLoader for Benches and Fountain
+const loader = new GLTFLoader();
+
+loader.load(
+  'path/to/bench.gltf', // Replace with your GLTF model URL for the bench
+  (gltf) => {
+    for (let i = 0; i < 5; i++) {
+      const x = Math.random() * 30 - 15;
+      const z = Math.random() * 30 - 15;
+
+      const bench = gltf.scene.clone();
+      bench.position.set(x, 0, z);
+      bench.scale.set(0.5, 0.5, 0.5); // Adjust scale to fit the scene
+      bench.castShadow = true;
+      scene.add(bench);
+    }
+  },
+  undefined,
+  (error) => console.error('An error occurred while loading the bench model:', error)
+);
+
+loader.load(
+  'path/to/fountain.gltf', // Replace with your GLTF model URL for the fountain
+  (gltf) => {
+    const fountain = gltf.scene;
+    fountain.position.set(0, 0, 0);
+    fountain.scale.set(1.5, 1.5, 1.5); // Adjust scale to fit the scene
+    fountain.castShadow = true;
+    scene.add(fountain);
+  },
+  undefined,
+  (error) => console.error('An error occurred while loading the fountain model:', error)
+);
+
+// Blue Rain Particles
+const particleCount = 1000;
+const particlesGeometry = new THREE.BufferGeometry();
+const positions = [];
+const velocities = [];
+
+for (let i = 0; i < particleCount; i++) {
+  positions.push(
+    Math.random() * 100 - 50, // X
+    Math.random() * 50 + 10,  // Y
+    Math.random() * 100 - 50 // Z
+  );
+  velocities.push(0, Math.random() * -0.1, 0); // Falling effect
+}
+
+particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+particlesGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+
+const particlesMaterial = new THREE.PointsMaterial({
+  color: 0x0077ff,
+  size: 0.3,
+  transparent: true,
+  opacity: 0.8
+});
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particles);
+
+// Animation Loop
 const clock = new THREE.Clock();
+
 const animate = () => {
   const elapsedTime = clock.getElapsedTime();
 
-  // Rotate crystals
-  scene.traverse((object) => {
-    if (object.geometry && object.userData.rotateSpeed) {
-      object.rotation.y += object.userData.rotateSpeed;
-    }
-  });
+  // Update particles
+  const positions = particlesGeometry.attributes.position.array;
+  const velocities = particlesGeometry.attributes.velocity.array;
 
-  // Move orbs
-  orbs.forEach(({ light, velocity }) => {
-    light.position.add(velocity);
-    if (light.position.y < 1 || light.position.y > 6) velocity.y *= -1;
-    if (light.position.x < -20 || light.position.x > 20) velocity.x *= -1;
-    if (light.position.z < -20 || light.position.z > 20) velocity.z *= -1;
-  });
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3 + 1] += velocities[i * 3 + 1]; // Y position falls
+    if (positions[i * 3 + 1] < 0) {
+      positions[i * 3 + 1] = Math.random() * 50 + 10; // Reset particle to top
+    }
+  }
+
+  particlesGeometry.attributes.position.needsUpdate = true;
 
   controls.update();
   renderer.render(scene, camera);
@@ -140,7 +155,7 @@ const animate = () => {
 animate();
 
 // Handle window resize
-window.addEventListener("resize", () => {
+window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
