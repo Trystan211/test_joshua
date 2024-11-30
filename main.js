@@ -5,6 +5,7 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 // Scene Setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffd7b5); // Warm sunset color
+scene.fog = new THREE.Fog(0xffd7b5, 20, 100); // Warm sunset color with near and far distances
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(20, 10, 30);
@@ -23,7 +24,7 @@ controls.dampingFactor = 0.25;
 // Ground
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(100, 100),
-  new THREE.MeshStandardMaterial({ color: 0x8db596 }) // Grass-like material
+  new THREE.MeshStandardMaterial({ color: 0xb94e48 }) // Autumn red floor
 );
 ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
@@ -42,41 +43,44 @@ sunlight.shadow.mapSize.height = 2048;
 sunlight.shadow.bias = -0.001; // Adjust shadow bias to prevent artifacts
 scene.add(sunlight);
 
-// Trees
-const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-const leafMaterial = new THREE.MeshStandardMaterial({ color: 0x2e8b57 });
+// Autumn Trees
+const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
+const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
 
-for (let i = 0; i < 15; i++) {
+for (let i = 0; i < 20; i++) {
   const x = Math.random() * 50 - 25;
   const z = Math.random() * 50 - 25;
 
   const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.3, 0.3, 4),
+    new THREE.CylinderGeometry(0.5, 0.5, 8),
     trunkMaterial
   );
-  trunk.position.set(x, 2, z);
+  trunk.position.set(x, 4, z);
   trunk.castShadow = true;
 
-  const foliage = new THREE.Mesh(
-    new THREE.SphereGeometry(2, 16, 16),
-    leafMaterial
-  );
-  foliage.position.set(x, 6, z);
-  foliage.castShadow = true;
+  // Layered conical foliage
+  for (let j = 0; j < 3; j++) {
+    const foliage = new THREE.Mesh(
+      new THREE.ConeGeometry(5 - j * 2, 4),
+      leafMaterial
+    );
+    foliage.position.set(x, 8 + j * 2, z);
+    foliage.castShadow = true;
+    scene.add(foliage);
+  }
 
   scene.add(trunk);
-  scene.add(foliage);
 }
 
-// GLTFLoader for Benches and Fountain
+// Benches
 const loader = new GLTFLoader();
 
 loader.load(
   'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
-    for (let i = 0; i < 5; i++) {
-      const x = Math.random() * 30 - 15;
-      const z = Math.random() * 30 - 15;
+    for (let i = 0; i < 10; i++) {
+      const x = Math.random() * 40 - 20;
+      const z = Math.random() * 40 - 20;
 
       const bench = gltf.scene.clone();
       bench.position.set(x, 0, z);
@@ -90,19 +94,27 @@ loader.load(
   (error) => console.error('An error occurred while loading the bench model:', error)
 );
 
-loader.load(
-  'https://trystan211.github.io/test_joshua/low_poly_abandoned_fountain_with_rune_stones.glb', // Replace with your GLTF model URL for the fountain
-  (gltf) => {
-    const fountain = gltf.scene;
-    fountain.position.set(0, 0, 0);
-    fountain.scale.set(1.5, 1.5, 1.5); // Adjust scale to fit the scene
-    fountain.castShadow = true;
-    fountain.receiveShadow = true; // Ensure fountain receives shadows
-    scene.add(fountain);
-  },
-  undefined,
-  (error) => console.error('An error occurred while loading the fountain model:', error)
-);
+// White Crystal-Like Rocks
+const rockMaterial = new THREE.MeshStandardMaterial({
+  color: 0xffffff,
+  roughness: 0.9,
+  metalness: 0.1
+});
+
+for (let i = 0; i < 15; i++) {
+  const x = Math.random() * 50 - 25;
+  const z = Math.random() * 50 - 25;
+  const y = 0.5;
+
+  const rock = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(Math.random() * 2 + 1, 1),
+    rockMaterial
+  );
+  rock.position.set(x, y, z);
+  rock.castShadow = true;
+  rock.receiveShadow = true;
+  scene.add(rock);
+}
 
 // Blue Rain Particles
 const particleCount = 1000;
@@ -164,4 +176,3 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
