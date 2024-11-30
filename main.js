@@ -114,7 +114,7 @@ loader.load(
 
 // Fountain
 loader.load(
-  'https://trystan211.github.io/test_joshua/low_poly_abandoned_fountain_with_rune_stones.glb', // Replace with your GLTF model URL for the fountain
+  'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb', // Replace with your GLTF model URL for the fountain
   (gltf) => {
     const fountain = gltf.scene;
     fountain.position.set(0, 0, 0);
