@@ -133,9 +133,9 @@ loader.load(
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 1.5, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 2, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
-      fox.scale.set(2, 2, 2);
+      fox.scale.set(1, 1, 1);
       scene.add(fox);
     }
   },
