@@ -67,7 +67,7 @@ loader.load(
   (gltf) => {
     const shrine = gltf.scene;
 
-    shrine.position.set(restrictedArea.x, 0, restrictedArea.z);
+    shrine.position.set(restrictedArea.x, -0.5, restrictedArea.z);
     shrine.scale.set(150, 150, 150); // Increased scale to fit the scene
     scene.add(shrine);
 
@@ -133,7 +133,7 @@ loader.load(
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 2, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 0, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
       fox.scale.set(1, 1, 1);
       scene.add(fox);
