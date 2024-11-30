@@ -114,18 +114,29 @@ loader.load(
 
 // Fountain
 loader.load(
-  'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb', // Replace with your GLTF model URL for the fountain
+  'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb',
   (gltf) => {
     const fountain = gltf.scene;
-    fountain.position.set(-3, 0, -1);
-    fountain.scale.set(3, 3, 3); // Adjust scale to fit the scene
+
+    // Center the model using its bounding box
+    const boundingBox = new THREE.Box3().setFromObject(fountain);
+    const center = new THREE.Vector3();
+    boundingBox.getCenter(center);
+
+    // Adjust the model's position to align its center with (0, 0, 0)
+    fountain.position.set(-center.x, -center.y, -center.z);
+
+    // Scale and shadows
+    fountain.scale.set(3, 3, 3);
     fountain.castShadow = true;
-    fountain.receiveShadow = true; // Ensure fountain receives shadows
+    fountain.receiveShadow = true;
+
     scene.add(fountain);
   },
   undefined,
-  (error) => console.error('An error occurred while loading the fountain model:', error)
+  (error) => console.error('An error occurred while loading the shrine model:', error)
 );
+
 
 // White Crystal-Like Rocks
 const rockMaterial = new THREE.MeshStandardMaterial({
