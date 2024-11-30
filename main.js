@@ -70,7 +70,7 @@ function getRandomPositionOutsideRestrictedArea() {
 // Load and dynamically set the restricted area for the shrine
 const loader = new GLTFLoader();
 loader.load(
-  'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the shrine
+  'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb', // Replace with your GLTF model URL for the shrine
   (gltf) => {
     const fountain = gltf.scene;
 
@@ -140,7 +140,7 @@ for (let i = 0; i < 20; i++) {
 
 // Benches
 loader.load(
-  'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
+  'https://trystan211.github.io/test_joshua/low_poly_fox.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
     for (let i = 0; i < 5; i++) { // Lessen to 5 benches
       let position = getRandomPositionOutsideRestrictedArea();
