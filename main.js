@@ -43,20 +43,70 @@ sunlight.shadow.mapSize.height = 2048;
 sunlight.shadow.bias = -0.001; // Adjust shadow bias to prevent artifacts
 scene.add(sunlight);
 
+// Restricted Area (updated dynamically based on shrine size)
+let restrictedArea = {
+  x: -3, // Initial guess for shrine position
+  z: -1, // Initial guess for shrine position
+  radius: 0 // Will be calculated dynamically
+};
+
+// Function to check if a position is inside the restricted area
+function isInsideRestrictedArea(x, z) {
+  const dx = x - restrictedArea.x;
+  const dz = z - restrictedArea.z;
+  return Math.sqrt(dx * dx + dz * dz) < restrictedArea.radius;
+}
+
+// Function to get a random position outside the restricted area
+function getRandomPositionOutsideRestrictedArea() {
+  let x, z;
+  do {
+    x = Math.random() * 50 - 25; // Replace with your scene's range
+    z = Math.random() * 50 - 25;
+  } while (isInsideRestrictedArea(x, z)); // Keep generating until it's outside the restricted area
+  return { x, z };
+}
+
+// Load and dynamically set the restricted area for the shrine
+const loader = new GLTFLoader();
+loader.load(
+  'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb', // Replace with your GLTF model URL for the shrine
+  (gltf) => {
+    const fountain = gltf.scene;
+
+    // Position the shrine
+    fountain.position.set(restrictedArea.x, 0, restrictedArea.z);
+    fountain.scale.set(3, 3, 3); // Adjust scale to fit the scene
+    fountain.castShadow = true;
+    fountain.receiveShadow = true;
+    scene.add(fountain);
+
+    // Calculate bounding box for the shrine
+    const boundingBox = new THREE.Box3().setFromObject(fountain);
+    const size = new THREE.Vector3();
+    boundingBox.getSize(size);
+
+    // Update restricted area radius dynamically based on shrine's size
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 2; // Add a small buffer (e.g., 2 units)
+    console.log(`Restricted area radius: ${restrictedArea.radius}`);
+  },
+  undefined,
+  (error) => console.error('An error occurred while loading the shrine model:', error)
+);
+
 // Autumn Trees with Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
 const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red mushroom caps
 
 for (let i = 0; i < 20; i++) {
-  const x = Math.random() * 50 - 25;
-  const z = Math.random() * 50 - 25;
+  let position = getRandomPositionOutsideRestrictedArea();
 
   const trunk = new THREE.Mesh(
     new THREE.CylinderGeometry(0.5, 0.5, 8),
     trunkMaterial
   );
-  trunk.position.set(x, 4, z);
+  trunk.position.set(position.x, 4, position.z);
   trunk.castShadow = true;
 
   // Layered conical foliage
@@ -65,7 +115,7 @@ for (let i = 0; i < 20; i++) {
       new THREE.ConeGeometry(5 - j * 1.5, 4),
       leafMaterial
     );
-    foliage.position.set(x, 8 + j * 2.5, z);
+    foliage.position.set(position.x, 8 + j * 2.5, position.z);
     foliage.castShadow = true;
     scene.add(foliage);
   }
@@ -77,9 +127,9 @@ for (let i = 0; i < 20; i++) {
       mushroomMaterial
     );
     mushroom.position.set(
-      x + Math.random() * 1.5 - 0.75,
+      position.x + Math.random() * 1.5 - 0.75,
       0.3,
-      z + Math.random() * 1.5 - 0.75
+      position.z + Math.random() * 1.5 - 0.75
     );
     mushroom.castShadow = true;
     scene.add(mushroom);
@@ -89,18 +139,15 @@ for (let i = 0; i < 20; i++) {
 }
 
 // Benches
-const loader = new GLTFLoader();
-
 loader.load(
-  '', // Replace with your GLTF model URL for the bench
+  'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
     for (let i = 0; i < 5; i++) { // Lessen to 5 benches
-      const x = Math.random() * 40 - 20;
-      const z = Math.random() * 40 - 20;
+      let position = getRandomPositionOutsideRestrictedArea();
       const rotationY = Math.random() * Math.PI * 2; // Random rotation in radians
 
       const bench = gltf.scene.clone();
-      bench.position.set(x, 0, z);
+      bench.position.set(position.x, 0, position.z);
       bench.rotation.y = rotationY; // Apply random rotation
       bench.scale.set(4, 4, 4); // Adjust scale to fit the scene
       bench.castShadow = true;
@@ -112,32 +159,6 @@ loader.load(
   (error) => console.error('An error occurred while loading the bench model:', error)
 );
 
-// Fountain
-loader.load(
-  'https://trystan211.github.io/test_joshua/kitsune_fox_shrine_statue.glb',
-  (gltf) => {
-    const fountain = gltf.scene;
-
-    // Center the model using its bounding box
-    const boundingBox = new THREE.Box3().setFromObject(fountain);
-    const center = new THREE.Vector3();
-    boundingBox.getCenter(center);
-
-    // Adjust the model's position to align its center with (0, 0, 0)
-    fountain.position.set(-center.x, -center.y, -center.z);
-
-    // Scale and shadows
-    fountain.scale.set(3, 3, 3);
-    fountain.castShadow = true;
-    fountain.receiveShadow = true;
-
-    scene.add(fountain);
-  },
-  undefined,
-  (error) => console.error('An error occurred while loading the shrine model:', error)
-);
-
-
 // White Crystal-Like Rocks
 const rockMaterial = new THREE.MeshStandardMaterial({
   color: 0xffffff,
@@ -146,15 +167,13 @@ const rockMaterial = new THREE.MeshStandardMaterial({
 });
 
 for (let i = 0; i < 15; i++) {
-  const x = Math.random() * 50 - 25;
-  const z = Math.random() * 50 - 25;
-  const y = 0.5;
+  let position = getRandomPositionOutsideRestrictedArea();
 
   const rock = new THREE.Mesh(
     new THREE.IcosahedronGeometry(Math.random() * 2 + 1, 1),
     rockMaterial
   );
-  rock.position.set(x, y, z);
+  rock.position.set(position.x, 0.5, position.z);
   rock.castShadow = true;
   rock.receiveShadow = true;
   scene.add(rock);
