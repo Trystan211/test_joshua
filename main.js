@@ -5,7 +5,7 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 // Scene Setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffd7b5); // Warm sunset color
-scene.fog = new THREE.Fog(0xffd7b5, 20, 100); // Warm sunset color with near and far distances
+scene.fog = new THREE.Fog(0xd56b4f, 15, 70); // Red-tinted fog for autumn atmosphere
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(20, 10, 30);
@@ -23,7 +23,7 @@ controls.dampingFactor = 0.25;
 
 // Ground
 const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(100, 100),
+  new THREE.PlaneGeometry(60, 60), // Reduced ground size
   new THREE.MeshStandardMaterial({ color: 0xb94e48 }) // Autumn red floor
 );
 ground.rotation.x = -Math.PI / 2;
@@ -43,9 +43,10 @@ sunlight.shadow.mapSize.height = 2048;
 sunlight.shadow.bias = -0.001; // Adjust shadow bias to prevent artifacts
 scene.add(sunlight);
 
-// Autumn Trees
+// Autumn Trees with Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
+const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red mushroom caps
 
 for (let i = 0; i < 20; i++) {
   const x = Math.random() * 50 - 25;
@@ -59,14 +60,29 @@ for (let i = 0; i < 20; i++) {
   trunk.castShadow = true;
 
   // Layered conical foliage
-  for (let j = 0; j < 3; j++) {
+  for (let j = 0; j < 4; j++) {
     const foliage = new THREE.Mesh(
-      new THREE.ConeGeometry(5 - j * 2, 4),
+      new THREE.ConeGeometry(5 - j * 1.5, 4),
       leafMaterial
     );
-    foliage.position.set(x, 8 + j * 2, z);
+    foliage.position.set(x, 8 + j * 2.5, z);
     foliage.castShadow = true;
     scene.add(foliage);
+  }
+
+  // Mushrooms at the base
+  for (let j = 0; j < 3; j++) {
+    const mushroom = new THREE.Mesh(
+      new THREE.ConeGeometry(0.3, 0.6, 12),
+      mushroomMaterial
+    );
+    mushroom.position.set(
+      x + Math.random() * 1.5 - 0.75,
+      0.3,
+      z + Math.random() * 1.5 - 0.75
+    );
+    mushroom.castShadow = true;
+    scene.add(mushroom);
   }
 
   scene.add(trunk);
@@ -92,6 +108,21 @@ loader.load(
   },
   undefined,
   (error) => console.error('An error occurred while loading the bench model:', error)
+);
+
+// Fountain
+loader.load(
+  'https://trystan211.github.io/test_joshua/low_poly_abandoned_fountain_with_rune_stones.glb', // Replace with your GLTF model URL for the fountain
+  (gltf) => {
+    const fountain = gltf.scene;
+    fountain.position.set(0, 0, 0);
+    fountain.scale.set(1.5, 1.5, 1.5); // Adjust scale to fit the scene
+    fountain.castShadow = true;
+    fountain.receiveShadow = true; // Ensure fountain receives shadows
+    scene.add(fountain);
+  },
+  undefined,
+  (error) => console.error('An error occurred while loading the fountain model:', error)
 );
 
 // White Crystal-Like Rocks
