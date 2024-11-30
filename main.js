@@ -75,7 +75,7 @@ loader.load(
     const shrine = gltf.scene;
 
     shrine.position.set(restrictedArea.x, 0, restrictedArea.z);
-    shrine.scale.set(20, 20, 20); // Increased scale to fit the scene
+    shrine.scale.set(100, 100, 100); // Increased scale to fit the scene
     shrine.castShadow = true;
     shrine.receiveShadow = true;
     scene.add(shrine);
@@ -146,7 +146,7 @@ loader.load(
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 0.3, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 1, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
       fox.scale.set(2, 2, 2);
       fox.castShadow = true;
