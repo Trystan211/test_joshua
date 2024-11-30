@@ -124,7 +124,7 @@ for (let i = 0; i < 20; i++) {
   scene.add(trunk);
 }
 
-// Benches
+// Foxes
 loader.load(
   'https://trystan211.github.io/test_joshua/low_poly_fox.glb', // Fox model URL
   (gltf) => {
@@ -133,7 +133,7 @@ loader.load(
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 0, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 1, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
       fox.scale.set(1, 1, 1);
       scene.add(fox);
