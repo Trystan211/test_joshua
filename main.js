@@ -72,7 +72,7 @@ for (let i = 0; i < 15; i++) {
 const loader = new GLTFLoader();
 
 loader.load(
-  'path/to/bench.gltf', // Replace with your GLTF model URL for the bench
+  'https://trystan211.github.io/test_joshua/park_bech_low-poly.glb', // Replace with your GLTF model URL for the bench
   (gltf) => {
     for (let i = 0; i < 5; i++) {
       const x = Math.random() * 30 - 15;
@@ -91,7 +91,7 @@ loader.load(
 );
 
 loader.load(
-  'path/to/fountain.gltf', // Replace with your GLTF model URL for the fountain
+  'https://trystan211.github.io/test_joshua/low_poly_abandoned_fountain_with_rune_stones.glb', // Replace with your GLTF model URL for the fountain
   (gltf) => {
     const fountain = gltf.scene;
     fountain.position.set(0, 0, 0);
