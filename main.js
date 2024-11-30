@@ -92,7 +92,7 @@ for (let i = 0; i < 20; i++) {
 const loader = new GLTFLoader();
 
 loader.load(
-  'https://trystan211.github.io/test_joshua/fox.glb', // Replace with your GLTF model URL for the bench
+  '', // Replace with your GLTF model URL for the bench
   (gltf) => {
     for (let i = 0; i < 5; i++) { // Lessen to 5 benches
       const x = Math.random() * 40 - 20;
