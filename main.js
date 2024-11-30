@@ -4,7 +4,7 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 
 // Scene Setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffc8a3); // Subtle warm color
+scene.background = new THREE.Color(0xffc8a3);
 scene.fog = new THREE.Fog(0xd56b4f, 10, 50);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -39,7 +39,7 @@ scene.add(sunlight);
 let restrictedArea = {
   x: 0,
   z: 0,
-  radius: 15 // Default radius; updated dynamically when shrine is loaded
+  radius: 15
 };
 
 // Check if a position is outside the restricted area
@@ -53,7 +53,7 @@ function isOutsideRestrictedArea(x, z) {
 function getRandomPositionOutsideRestrictedArea() {
   let x, z;
   do {
-    x = Math.random() * 50 - 25; // Random position in scene range (-25 to 25)
+    x = Math.random() * 50 - 25;
     z = Math.random() * 50 - 25;
   } while (!isOutsideRestrictedArea(x, z));
   return { x, z };
@@ -70,11 +70,11 @@ loader.load(
     shrine.scale.set(170, 170, 170);
     scene.add(shrine);
 
-    // Calculate the bounding box and update restricted radius
+    // Calculate bounding box and update restricted radius
     const boundingBox = new THREE.Box3().setFromObject(shrine);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 10; // Add buffer to radius
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 10;
     console.log(`Restricted area radius updated: ${restrictedArea.radius}`);
   },
   undefined,
@@ -160,8 +160,53 @@ for (let i = 0; i < 15; i++) {
   scene.add(rock);
 }
 
+// Red Rain Particles
+const particleCount = 1000;
+const particlesGeometry = new THREE.BufferGeometry();
+const positions = [];
+const velocities = [];
+
+for (let i = 0; i < particleCount; i++) {
+  positions.push(
+    Math.random() * 100 - 50, // X
+    Math.random() * 50 + 10,  // Y
+    Math.random() * 100 - 50 // Z
+  );
+  velocities.push(0, Math.random() * -0.1, 0); // Falling effect
+}
+
+particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+particlesGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
+
+const particlesMaterial = new THREE.PointsMaterial({
+  color: 0xb94e48,
+  size: 0.5,
+  transparent: true,
+  opacity: 0.8
+});
+
+const particles = new THREE.Points(particlesGeometry, particlesMaterial);
+scene.add(particles);
+
 // Animation Loop
+const clock = new THREE.Clock();
+
 const animate = () => {
+  const elapsedTime = clock.getElapsedTime();
+
+  // Update particles
+  const positions = particlesGeometry.attributes.position.array;
+  const velocities = particlesGeometry.attributes.velocity.array;
+
+  for (let i = 0; i < particleCount; i++) {
+    positions[i * 3 + 1] += velocities[i * 3 + 1]; // Y position falls
+    if (positions[i * 3 + 1] < 0) {
+      positions[i * 3 + 1] = Math.random() * 50 + 10; // Reset particle to top
+    }
+  }
+
+  particlesGeometry.attributes.position.needsUpdate = true;
+
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
