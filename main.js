@@ -12,6 +12,7 @@ camera.position.set(20, 10, 30);
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
 document.body.appendChild(renderer.domElement);
 
 // OrbitControls
@@ -36,8 +37,9 @@ scene.add(ambientLight);
 const sunlight = new THREE.DirectionalLight(0xffe3b8, 1.2);
 sunlight.position.set(10, 20, -5);
 sunlight.castShadow = true;
-sunlight.shadow.mapSize.width = 1024;
-sunlight.shadow.mapSize.height = 1024;
+sunlight.shadow.mapSize.width = 2048; // Increase shadow map resolution
+sunlight.shadow.mapSize.height = 2048;
+sunlight.shadow.bias = -0.001; // Adjust shadow bias to prevent artifacts
 scene.add(sunlight);
 
 // Trees
@@ -80,6 +82,7 @@ loader.load(
       bench.position.set(x, 0, z);
       bench.scale.set(0.5, 0.5, 0.5); // Adjust scale to fit the scene
       bench.castShadow = true;
+      bench.receiveShadow = true; // Ensure benches receive shadows
       scene.add(bench);
     }
   },
@@ -94,6 +97,7 @@ loader.load(
     fountain.position.set(0, 0, 0);
     fountain.scale.set(1.5, 1.5, 1.5); // Adjust scale to fit the scene
     fountain.castShadow = true;
+    fountain.receiveShadow = true; // Ensure fountain receives shadows
     scene.add(fountain);
   },
   undefined,
@@ -160,3 +164,4 @@ window.addEventListener('resize', () => {
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
+
