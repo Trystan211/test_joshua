@@ -102,7 +102,7 @@ loader.load(
       const bench = gltf.scene.clone();
       bench.position.set(x, 0, z);
       bench.rotation.y = rotationY; // Apply random rotation
-      bench.scale.set(2, 2, 2); // Adjust scale to fit the scene
+      bench.scale.set(4, 4, 4); // Adjust scale to fit the scene
       bench.castShadow = true;
       bench.receiveShadow = true; // Ensure benches receive shadows
       scene.add(bench);
@@ -118,7 +118,7 @@ loader.load(
   (gltf) => {
     const fountain = gltf.scene;
     fountain.position.set(0, 0, 0);
-    fountain.scale.set(2.5, 2.5, 2.5); // Adjust scale to fit the scene
+    fountain.scale.set(5, 5, 5); // Adjust scale to fit the scene
     fountain.castShadow = true;
     fountain.receiveShadow = true; // Ensure fountain receives shadows
     scene.add(fountain);
