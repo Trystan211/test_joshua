@@ -118,7 +118,7 @@ loader.load(
   (gltf) => {
     const fountain = gltf.scene;
     fountain.position.set(0, 0, 0);
-    fountain.scale.set(5, 5, 5); // Adjust scale to fit the scene
+    fountain.scale.set(3.5, 3.5, 3.5); // Adjust scale to fit the scene
     fountain.castShadow = true;
     fountain.receiveShadow = true; // Ensure fountain receives shadows
     scene.add(fountain);
