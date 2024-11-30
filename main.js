@@ -4,16 +4,14 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 
 // Scene Setup
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0xffd7b5); // Warm sunset color
-scene.fog = new THREE.Fog(0xd56b4f, 15, 70); // Red-tinted fog for autumn atmosphere
+scene.background = new THREE.Color(0xffc8a3); // Subtle warm color
+scene.fog = new THREE.Fog(0xd56b4f, 10, 50); // Dimmer autumn fog
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(20, 10, 30);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Soft shadows
 document.body.appendChild(renderer.domElement);
 
 // OrbitControls
@@ -24,23 +22,18 @@ controls.dampingFactor = 0.25;
 // Ground
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(60, 60), // Reduced ground size
-  new THREE.MeshStandardMaterial({ color: 0xb94e48 }) // Autumn red floor
+  new THREE.MeshStandardMaterial({ color: 0x8b3e3e }) // Darker autumn red floor
 );
 ground.rotation.x = -Math.PI / 2;
-ground.receiveShadow = true;
 scene.add(ground);
 
 // Ambient Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Dimmer ambient light
 scene.add(ambientLight);
 
-// Sunlight
-const sunlight = new THREE.DirectionalLight(0xffe3b8, 1.2);
+// Directional Light
+const sunlight = new THREE.DirectionalLight(0xffd4a6, 0.6); // Dim sunlight
 sunlight.position.set(10, 20, -5);
-sunlight.castShadow = true;
-sunlight.shadow.mapSize.width = 2048; // Increase shadow map resolution
-sunlight.shadow.mapSize.height = 2048;
-sunlight.shadow.bias = -0.001; // Adjust shadow bias to prevent artifacts
 scene.add(sunlight);
 
 // Restricted Area (updated dynamically based on shrine size)
@@ -76,8 +69,6 @@ loader.load(
 
     shrine.position.set(restrictedArea.x, 0, restrictedArea.z);
     shrine.scale.set(100, 100, 100); // Increased scale to fit the scene
-    shrine.castShadow = true;
-    shrine.receiveShadow = true;
     scene.add(shrine);
 
     // Calculate bounding box
@@ -92,7 +83,6 @@ loader.load(
   (error) => console.error('An error occurred while loading the shrine model:', error)
 );
 
-
 // Autumn Trees with Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
@@ -106,7 +96,6 @@ for (let i = 0; i < 20; i++) {
     trunkMaterial
   );
   trunk.position.set(position.x, 4, position.z);
-  trunk.castShadow = true;
 
   // Layered conical foliage
   for (let j = 0; j < 4; j++) {
@@ -115,7 +104,6 @@ for (let i = 0; i < 20; i++) {
       leafMaterial
     );
     foliage.position.set(position.x, 8 + j * 2.5, position.z);
-    foliage.castShadow = true;
     scene.add(foliage);
   }
 
@@ -130,7 +118,6 @@ for (let i = 0; i < 20; i++) {
       0.3,
       position.z + Math.random() * 1.5 - 0.75
     );
-    mushroom.castShadow = true;
     scene.add(mushroom);
   }
 
@@ -149,15 +136,12 @@ loader.load(
       fox.position.set(position.x, 1, position.z); // Adjust y-position to 0.3 or suitable value
       fox.rotation.y = rotationY;
       fox.scale.set(2, 2, 2);
-      fox.castShadow = true;
-      fox.receiveShadow = true;
       scene.add(fox);
     }
   },
   undefined,
   (error) => console.error('An error occurred while loading the fox model:', error)
 );
-
 
 // White Crystal-Like Rocks
 const rockMaterial = new THREE.MeshStandardMaterial({
@@ -174,8 +158,6 @@ for (let i = 0; i < 15; i++) {
     rockMaterial
   );
   rock.position.set(position.x, 0.5, position.z);
-  rock.castShadow = true;
-  rock.receiveShadow = true;
   scene.add(rock);
 }
 
