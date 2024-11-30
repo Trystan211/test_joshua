@@ -70,29 +70,28 @@ function getRandomPositionOutsideRestrictedArea() {
 // Load and dynamically set the restricted area for the shrine
 const loader = new GLTFLoader();
 loader.load(
-  'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb', // Replace with your GLTF model URL for the shrine
+  'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb', // Shrine model URL
   (gltf) => {
-    const fountain = gltf.scene;
+    const shrine = gltf.scene;
 
-    // Position the shrine
-    fountain.position.set(restrictedArea.x, 0, restrictedArea.z);
-    fountain.scale.set(10, 10, 10); // Adjust scale to fit the scene
-    fountain.castShadow = true;
-    fountain.receiveShadow = true;
-    scene.add(fountain);
+    shrine.position.set(restrictedArea.x, 0, restrictedArea.z);
+    shrine.scale.set(20, 20, 20); // Increased scale to fit the scene
+    shrine.castShadow = true;
+    shrine.receiveShadow = true;
+    scene.add(shrine);
 
-    // Calculate bounding box for the shrine
-    const boundingBox = new THREE.Box3().setFromObject(fountain);
+    // Calculate bounding box
+    const boundingBox = new THREE.Box3().setFromObject(shrine);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
 
-    // Update restricted area radius dynamically based on shrine's size
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 2; // Add a small buffer (e.g., 2 units)
-    console.log(`Restricted area radius: ${restrictedArea.radius}`);
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 2;
+    console.log(`Updated restricted area radius: ${restrictedArea.radius}`);
   },
   undefined,
   (error) => console.error('An error occurred while loading the shrine model:', error)
 );
+
 
 // Autumn Trees with Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
@@ -140,24 +139,25 @@ for (let i = 0; i < 20; i++) {
 
 // Benches
 loader.load(
-  'https://trystan211.github.io/test_joshua/low_poly_fox.glb', // Replace with your GLTF model URL for the bench
+  'https://trystan211.github.io/test_joshua/low_poly_fox.glb', // Fox model URL
   (gltf) => {
-    for (let i = 0; i < 5; i++) { // Lessen to 5 benches
+    for (let i = 0; i < 5; i++) {
       let position = getRandomPositionOutsideRestrictedArea();
-      const rotationY = Math.random() * Math.PI * 2; // Random rotation in radians
+      const rotationY = Math.random() * Math.PI * 2;
 
-      const bench = gltf.scene.clone();
-      bench.position.set(position.x, 0, position.z);
-      bench.rotation.y = rotationY; // Apply random rotation
-      bench.scale.set(2, 2, 2); // Adjust scale to fit the scene
-      bench.castShadow = true;
-      bench.receiveShadow = true; // Ensure benches receive shadows
-      scene.add(bench);
+      const fox = gltf.scene.clone();
+      fox.position.set(position.x, 0.3, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.rotation.y = rotationY;
+      fox.scale.set(2, 2, 2);
+      fox.castShadow = true;
+      fox.receiveShadow = true;
+      scene.add(fox);
     }
   },
   undefined,
-  (error) => console.error('An error occurred while loading the bench model:', error)
+  (error) => console.error('An error occurred while loading the fox model:', error)
 );
+
 
 // White Crystal-Like Rocks
 const rockMaterial = new THREE.MeshStandardMaterial({
