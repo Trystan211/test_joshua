@@ -5,7 +5,7 @@ import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.0/examples/
 // Scene Setup
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xffc8a3); // Subtle warm color
-scene.fog = new THREE.Fog(0xd56b4f, 10, 50); // Dimmer autumn fog
+scene.fog = new THREE.Fog(0xd56b4f, 10, 50);
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(20, 10, 30);
@@ -22,54 +22,44 @@ controls.dampingFactor = 0.25;
 // Ground
 const ground = new THREE.Mesh(
   new THREE.PlaneGeometry(60, 60),
-  new THREE.MeshStandardMaterial({ color: 0x8b3e3e }) // Darker autumn red floor
+  new THREE.MeshStandardMaterial({ color: 0x8b3e3e })
 );
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
-// Ambient Light
+// Lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
-// Directional Light
 const sunlight = new THREE.DirectionalLight(0xffd4a6, 0.6);
 sunlight.position.set(10, 20, -5);
 scene.add(sunlight);
 
-// Restricted Area
+// Restricted Area (Shrine Center)
 let restrictedArea = {
-  x: 0, // Centered at the middle of the scene
+  x: 0,
   z: 0,
-  radius: 0 // Will be updated after shrine is loaded
+  radius: 15 // Default radius; updated dynamically when shrine is loaded
 };
 
-// Function to check if a position is inside the restricted area
-function isInsideRestrictedArea(x, z) {
+// Check if a position is outside the restricted area
+function isOutsideRestrictedArea(x, z) {
   const dx = x - restrictedArea.x;
   const dz = z - restrictedArea.z;
-  return Math.sqrt(dx * dx + dz * dz) < restrictedArea.radius;
+  return Math.sqrt(dx * dx + dz * dz) >= restrictedArea.radius;
 }
 
-// Function to get a random position outside the restricted area
+// Get a random position outside the restricted area
 function getRandomPositionOutsideRestrictedArea() {
   let x, z;
-  let maxAttempts = 1000; // Limit attempts to avoid infinite loops
-  let attempts = 0;
-
   do {
-    x = Math.random() * 50 - 25; // Scene range (-25 to 25)
+    x = Math.random() * 50 - 25; // Random position in scene range (-25 to 25)
     z = Math.random() * 50 - 25;
-    attempts++;
-    if (attempts > maxAttempts) {
-      console.error("Failed to find a valid position outside the restricted area.");
-      break;
-    }
-  } while (isInsideRestrictedArea(x, z));
-
+  } while (!isOutsideRestrictedArea(x, z));
   return { x, z };
 }
 
-// Load and center the shrine at the middle of the scene
+// Load Shrine Model
 const loader = new GLTFLoader();
 loader.load(
   'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb',
@@ -77,36 +67,36 @@ loader.load(
     const shrine = gltf.scene;
 
     shrine.position.set(restrictedArea.x, -0.5, restrictedArea.z);
-    shrine.scale.set(170, 170, 170); // Increased scale to fit the scene
+    shrine.scale.set(170, 170, 170);
     scene.add(shrine);
 
-    // Calculate bounding box
+    // Calculate the bounding box and update restricted radius
     const boundingBox = new THREE.Box3().setFromObject(shrine);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 5; // Adjusted radius with a safety buffer
-    console.log(`Updated restricted area radius: ${restrictedArea.radius}`);
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 10; // Add buffer to radius
+    console.log(`Restricted area radius updated: ${restrictedArea.radius}`);
   },
   undefined,
-  (error) => console.error('An error occurred while loading the shrine model:', error)
+  (error) => console.error('Error loading shrine model:', error)
 );
 
-// Autumn Trees with Mushrooms
+// Trees and Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
 const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
 
 for (let i = 0; i < 20; i++) {
-  let position = getRandomPositionOutsideRestrictedArea();
+  const position = getRandomPositionOutsideRestrictedArea();
 
+  // Tree trunk
   const trunk = new THREE.Mesh(
     new THREE.CylinderGeometry(0.5, 0.5, 8),
     trunkMaterial
   );
   trunk.position.set(position.x, 4, position.z);
 
-  // Layered conical foliage
+  // Tree foliage
   for (let j = 0; j < 4; j++) {
     const foliage = new THREE.Mesh(
       new THREE.ConeGeometry(5 - j * 1.5, 4),
@@ -133,12 +123,12 @@ for (let i = 0; i < 20; i++) {
   scene.add(trunk);
 }
 
-// Load fox models
+// Load Fox Models
 loader.load(
   'https://trystan211.github.io/test_joshua/low_poly_fox.glb',
   (gltf) => {
     for (let i = 0; i < 5; i++) {
-      let position = getRandomPositionOutsideRestrictedArea();
+      const position = getRandomPositionOutsideRestrictedArea();
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
@@ -149,10 +139,10 @@ loader.load(
     }
   },
   undefined,
-  (error) => console.error('An error occurred while loading the fox model:', error)
+  (error) => console.error('Error loading fox model:', error)
 );
 
-// White Crystal-Like Rocks
+// Rocks
 const rockMaterial = new THREE.MeshStandardMaterial({
   color: 0xffffff,
   roughness: 0.9,
@@ -160,7 +150,7 @@ const rockMaterial = new THREE.MeshStandardMaterial({
 });
 
 for (let i = 0; i < 15; i++) {
-  let position = getRandomPositionOutsideRestrictedArea();
+  const position = getRandomPositionOutsideRestrictedArea();
 
   const rock = new THREE.Mesh(
     new THREE.IcosahedronGeometry(Math.random() * 2 + 1, 1),
@@ -170,53 +160,8 @@ for (let i = 0; i < 15; i++) {
   scene.add(rock);
 }
 
-// Red Rain Particles
-const particleCount = 1000;
-const particlesGeometry = new THREE.BufferGeometry();
-const positions = [];
-const velocities = [];
-
-for (let i = 0; i < particleCount; i++) {
-  positions.push(
-    Math.random() * 100 - 50, // X
-    Math.random() * 50 + 10,  // Y
-    Math.random() * 100 - 50 // Z
-  );
-  velocities.push(0, Math.random() * -0.1, 0); // Falling effect
-}
-
-particlesGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-particlesGeometry.setAttribute('velocity', new THREE.Float32BufferAttribute(velocities, 3));
-
-const particlesMaterial = new THREE.PointsMaterial({
-  color: 0xb94e48,
-  size: 0.5,
-  transparent: true,
-  opacity: 0.8
-});
-
-const particles = new THREE.Points(particlesGeometry, particlesMaterial);
-scene.add(particles);
-
 // Animation Loop
-const clock = new THREE.Clock();
-
 const animate = () => {
-  const elapsedTime = clock.getElapsedTime();
-
-  // Update particles
-  const positions = particlesGeometry.attributes.position.array;
-  const velocities = particlesGeometry.attributes.velocity.array;
-
-  for (let i = 0; i < particleCount; i++) {
-    positions[i * 3 + 1] += velocities[i * 3 + 1]; // Y position falls
-    if (positions[i * 3 + 1] < 0) {
-      positions[i * 3 + 1] = Math.random() * 50 + 10; // Reset particle to top
-    }
-  }
-
-  particlesGeometry.attributes.position.needsUpdate = true;
-
   controls.update();
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
@@ -224,7 +169,7 @@ const animate = () => {
 
 animate();
 
-// Handle window resize
+// Handle Window Resize
 window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
