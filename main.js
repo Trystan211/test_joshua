@@ -21,26 +21,26 @@ controls.dampingFactor = 0.25;
 
 // Ground
 const ground = new THREE.Mesh(
-  new THREE.PlaneGeometry(60, 60), // Reduced ground size
+  new THREE.PlaneGeometry(60, 60),
   new THREE.MeshStandardMaterial({ color: 0x8b3e3e }) // Darker autumn red floor
 );
 ground.rotation.x = -Math.PI / 2;
 scene.add(ground);
 
 // Ambient Light
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.3); // Dimmer ambient light
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
 scene.add(ambientLight);
 
 // Directional Light
-const sunlight = new THREE.DirectionalLight(0xffd4a6, 0.6); // Dim sunlight
+const sunlight = new THREE.DirectionalLight(0xffd4a6, 0.6);
 sunlight.position.set(10, 20, -5);
 scene.add(sunlight);
 
-// Restricted Area (updated dynamically based on shrine size)
+// Restricted Area
 let restrictedArea = {
-  x: -3, // Initial guess for shrine position
-  z: -1, // Initial guess for shrine position
-  radius: 0 // Will be calculated dynamically
+  x: 0, // Centered at the middle of the scene
+  z: 0,
+  radius: 0 // Will be updated after shrine is loaded
 };
 
 // Function to check if a position is inside the restricted area
@@ -53,17 +53,26 @@ function isInsideRestrictedArea(x, z) {
 // Function to get a random position outside the restricted area
 function getRandomPositionOutsideRestrictedArea() {
   let x, z;
+  let maxAttempts = 1000; // Limit attempts to avoid infinite loops
+  let attempts = 0;
+
   do {
-    x = Math.random() * 50 - 25; // Replace with your scene's range
+    x = Math.random() * 50 - 25; // Scene range (-25 to 25)
     z = Math.random() * 50 - 25;
-  } while (isInsideRestrictedArea(x, z)); // Keep generating until it's outside the restricted area
+    attempts++;
+    if (attempts > maxAttempts) {
+      console.error("Failed to find a valid position outside the restricted area.");
+      break;
+    }
+  } while (isInsideRestrictedArea(x, z));
+
   return { x, z };
 }
 
-// Load and dynamically set the restricted area for the shrine
+// Load and center the shrine at the middle of the scene
 const loader = new GLTFLoader();
 loader.load(
-  'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb', // Shrine model URL
+  'https://trystan211.github.io/test_joshua/fox_stone_statue_handpainted_kitsune.glb',
   (gltf) => {
     const shrine = gltf.scene;
 
@@ -76,7 +85,7 @@ loader.load(
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
 
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 2;
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 5; // Adjusted radius with a safety buffer
     console.log(`Updated restricted area radius: ${restrictedArea.radius}`);
   },
   undefined,
@@ -86,7 +95,7 @@ loader.load(
 // Autumn Trees with Mushrooms
 const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
-const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 }); // Red mushroom caps
+const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
 
 for (let i = 0; i < 20; i++) {
   let position = getRandomPositionOutsideRestrictedArea();
@@ -124,16 +133,16 @@ for (let i = 0; i < 20; i++) {
   scene.add(trunk);
 }
 
-// Foxes
+// Load fox models
 loader.load(
-  'https://trystan211.github.io/test_joshua/low_poly_fox.glb', // Fox model URL
+  'https://trystan211.github.io/test_joshua/low_poly_fox.glb',
   (gltf) => {
     for (let i = 0; i < 5; i++) {
       let position = getRandomPositionOutsideRestrictedArea();
       const rotationY = Math.random() * Math.PI * 2;
 
       const fox = gltf.scene.clone();
-      fox.position.set(position.x, 1, position.z); // Adjust y-position to 0.3 or suitable value
+      fox.position.set(position.x, 0.3, position.z);
       fox.rotation.y = rotationY;
       fox.scale.set(1, 1, 1);
       scene.add(fox);
