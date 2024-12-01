@@ -67,7 +67,7 @@ loader.load(
     const shrine = gltf.scene;
 
     shrine.position.set(restrictedArea.x, -0.5, restrictedArea.z);
-    shrine.scale.set(270, 270, 270);
+    shrine.scale.set(310, 310, 310);
     scene.add(shrine);
 
     // Calculate bounding box and update restricted radius
