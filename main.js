@@ -74,7 +74,7 @@ loader.load(
     const boundingBox = new THREE.Box3().setFromObject(shrine);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 10;
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 7;
     console.log(`Restricted area radius updated: ${restrictedArea.radius}`);
   },
   undefined,
