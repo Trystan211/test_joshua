@@ -86,15 +86,21 @@ const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5b341c });
 const leafMaterial = new THREE.MeshStandardMaterial({ color: 0xd35f45 });
 const mushroomMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
 
+const trees = [];
+
 for (let i = 0; i < 20; i++) {
   const position = getRandomPositionOutsideRestrictedArea();
+
+  // Create a group for the whole tree
+  const treeGroup = new THREE.Group();
 
   // Tree trunk
   const trunk = new THREE.Mesh(
     new THREE.CylinderGeometry(0.5, 0.5, 8),
     trunkMaterial
   );
-  trunk.position.set(position.x, 4, position.z);
+  trunk.position.set(0, 4, 0);
+  treeGroup.add(trunk);
 
   // Tree foliage
   for (let j = 0; j < 4; j++) {
@@ -102,25 +108,16 @@ for (let i = 0; i < 20; i++) {
       new THREE.ConeGeometry(5 - j * 1.5, 4),
       leafMaterial
     );
-    foliage.position.set(position.x, 8 + j * 2.5, position.z);
-    scene.add(foliage);
+    foliage.position.set(0, 8 + j * 2.5, 0);
+    treeGroup.add(foliage);
   }
 
-  // Mushrooms at the base
-  for (let j = 0; j < 3; j++) {
-    const mushroom = new THREE.Mesh(
-      new THREE.ConeGeometry(0.3, 0.6, 12),
-      mushroomMaterial
-    );
-    mushroom.position.set(
-      position.x + Math.random() * 1.5 - 0.75,
-      0.3,
-      position.z + Math.random() * 1.5 - 0.75
-    );
-    scene.add(mushroom);
-  }
+  // Position the whole tree group
+  treeGroup.position.set(position.x, 0, position.z);
 
-  scene.add(trunk);
+  // Add the tree group to the scene and store it for interaction
+  scene.add(treeGroup);
+  trees.push(treeGroup);
 }
 
 // Load Fox Models
@@ -188,12 +185,46 @@ const particlesMaterial = new THREE.PointsMaterial({
 const particles = new THREE.Points(particlesGeometry, particlesMaterial);
 scene.add(particles);
 
+// Raycaster for tree interaction
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener('click', (event) => {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+
+  const intersects = raycaster.intersectObjects(trees, true); // Use `true` for recursive checking
+  if (intersects.length > 0) {
+    const treeGroup = intersects[0].object.parent;
+
+    // Change size and color for all parts of the tree
+    treeGroup.scale.multiplyScalar(1.2);
+    treeGroup.children.forEach((child) => {
+      if (child.material) {
+        child.material.color.set(0x4b2a17); // Darker color
+      }
+    });
+
+    // Revert changes after 2 seconds
+    setTimeout(() => {
+      treeGroup.scale.multiplyScalar(1 / 1.2);
+      treeGroup.children.forEach((child) => {
+        if (child.material) {
+          child.material.color.set(
+            child.geometry.type === 'ConeGeometry' ? 0xd35f45 : 0x5b341c // Reset to original color
+          );
+        }
+      });
+    }, 2000);
+  }
+});
+
 // Animation Loop
 const clock = new THREE.Clock();
 
 const animate = () => {
-  const elapsedTime = clock.getElapsedTime();
-
   // Update particles
   const positions = particlesGeometry.attributes.position.array;
   const velocities = particlesGeometry.attributes.velocity.array;
