@@ -67,14 +67,14 @@ loader.load(
     const shrine = gltf.scene;
 
     shrine.position.set(restrictedArea.x, -0.5, restrictedArea.z);
-    shrine.scale.set(220, 220, 220);
+    shrine.scale.set(270, 270, 270);
     scene.add(shrine);
 
     // Calculate bounding box and update restricted radius
     const boundingBox = new THREE.Box3().setFromObject(shrine);
     const size = new THREE.Vector3();
     boundingBox.getSize(size);
-    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 2;
+    restrictedArea.radius = Math.max(size.x, size.z) / 2 + 1;
     console.log(`Restricted area radius updated: ${restrictedArea.radius}`);
   },
   undefined,
